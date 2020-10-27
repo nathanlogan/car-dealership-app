@@ -15,6 +15,14 @@ class Inventory extends Component {
     super(props)
 
     this.numberOfCarsToShow = 50
+
+    this.state = {
+      allCars: cars,
+      displayedCars: cars.slice(0, this.numberOfCarsToShow),
+      sortDirection: 'ascending',
+      sortColumn: null
+    }
+
     this.itemConfig = [
       { key: 'year', sortable: true, filterType: 'range'},
       { key: 'make', sortable: true, filterType: 'select'},
@@ -26,24 +34,13 @@ class Inventory extends Component {
       { key: 'highwayMileage', name: 'Highway MPG', format: obj => `${obj.low}-${obj.high}`},
       { key: 'description'},
     ]
-
-    this.state = {
-      allCars: cars,
-      displayedCars: cars.slice(0, this.numberOfCarsToShow),
-      filters: {},
-      sortDirection: 'ascending',
-      sortColumn: null
-    }
+    this.allFilters = this.getAllFilters()
 
     this.sort = this.sort.bind(this)
     this.filter = this.filter.bind(this)
   }
 
-  componentDidMount() {
-    this.getFilterParameters()
-  }
-
-  getFilterParameters() {
+  getAllFilters() {
     let keys = []
     let filters = {}
     
@@ -63,7 +60,7 @@ class Inventory extends Component {
     // sort filter values
     Object.keys(filters).forEach(key => filters[key] = filters[key].sort())
 
-    this.setState({filters})
+    return filters
   }
 
   sort(newColumn) {
@@ -88,8 +85,19 @@ class Inventory extends Component {
     }
   }
 
-  filter() {
+  filter(key, values, type = 'select') {
+    const { allCars } = this.state
+    let clone = JSON.parse(JSON.stringify(allCars))
 
+    // TODO: apply "AND" filter across filter types, "OR" filter within filter type
+
+    if (type === 'select') {
+      const results = !values?.length ? clone : clone.filter(car => values.includes(car[key]))
+      this.setState({
+        displayedCars: results.slice(0, this.numberOfCarsToShow)
+      })
+
+    } else alert('filter range')
   }
 
   // We would like you to build a website for a car dealership using HTML, CSS, and JavaScript.
@@ -105,7 +113,7 @@ class Inventory extends Component {
     return (
       <Container className={styles.app}>
         <Header as="h1">Car List Sample App</Header>
-        <Filters itemConfig={this.itemConfig} filters={filters} onFilter={this.filter} />
+        <Filters itemConfig={this.itemConfig} filters={this.allFilters} onFilter={this.filter} />
         <InventoryList
           itemConfig={this.itemConfig}
           items={displayedCars}
