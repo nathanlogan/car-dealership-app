@@ -4,7 +4,7 @@ import styles from './Inventory.module.css'
 
 import cars from 'store.json'
 
-import { sortBy } from 'lodash-es'
+import { sortBy, cloneDeep } from 'lodash-es'
 
 import { Container, Header } from "semantic-ui-react"
 import InventoryList from 'components/InventoryList/InventoryList'
@@ -16,9 +16,11 @@ class Inventory extends Component {
 
     this.numberOfCarsToShow = 50
 
+    this.cars = cars
     this.state = {
-      allCars: cars,
-      displayedCars: cars.slice(0, this.numberOfCarsToShow),
+      facetedCars: cars.slice(0),
+      facetedPagedCars: cars.slice(0, this.numberOfCarsToShow),
+      filters: [],
       sortDirection: 'ascending',
       sortColumn: null
     }
@@ -36,7 +38,7 @@ class Inventory extends Component {
     ]
     this.allFilters = this.getAllFilters()
 
-    this.sort = this.sort.bind(this)
+    this.onSort = this.onSort.bind(this)
     this.filter = this.filter.bind(this)
   }
 
@@ -53,7 +55,7 @@ class Inventory extends Component {
     })
 
     // populate filter values
-    this.state.allCars.forEach(car => {
+    this.cars.forEach(car => {
       keys.forEach(key => !filters[key].includes(car[key]) && filters[key].push(car[key]))
     })
 
@@ -63,41 +65,61 @@ class Inventory extends Component {
     return filters
   }
 
-  sort(newColumn) {
-    const { allCars, sortColumn, sortDirection } = this.state
-    let clone = JSON.parse(JSON.stringify(allCars))
+  doSort(results, sortColumn, sortDirection = 'ascending') {
+    return sortDirection === 'ascending' ? sortBy(results, [sortColumn]) : results.reverse()
+  }
+
+  onSort(newColumn) {
+    const { sortColumn, sortDirection } = this.state
+    let results = cloneDeep(this.state.facetedCars)
   
     if (sortColumn === newColumn) {
-      clone.reverse()
+      results.reverse()
       this.setState({
-        allCars: clone,
-        displayedCars: clone.slice(0, this.numberOfCarsToShow),
+        facetedCars: results,
+        facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
         sortDirection: sortDirection === 'ascending' ? 'descending' : 'ascending',
       })
     } else {
-      clone = sortBy(clone, [newColumn])
+      // TODO: sort monetary values properly
+      results = sortBy(results, [newColumn])
       this.setState({
-        allCars: clone,
-        displayedCars: clone.slice(0, this.numberOfCarsToShow),
+        facetedCars: results,
+        facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
         sortDirection: 'ascending',
         sortColumn: newColumn,
       })
     }
   }
 
-  filter(key, values, type = 'select') {
-    const { allCars } = this.state
-    let clone = JSON.parse(JSON.stringify(allCars))
+  // apply "OR" logic within filter type, but "AND" logic across filter types
+  filter(facet, values, type = 'select') {
+    let results = cloneDeep(this.cars)
+    let filters = cloneDeep(this.state.filters)
 
-    // TODO: apply "AND" filter across filter types, "OR" filter within filter type
+    // nuke the old filter definition (if it existed)
+    filters = filters.filter(filter => filter.facet !== facet)
+    // only save our filter if it has values
+    if (values.length) filters.push({ facet, values, type })
 
-    if (type === 'select') {
-      const results = !values?.length ? clone : clone.filter(car => values.includes(car[key]))
-      this.setState({
-        displayedCars: results.slice(0, this.numberOfCarsToShow)
-      })
+    // apply each filter type
+    filters.forEach(filter => {
+      if (filter.type === 'select') {
+        results = results.filter(car => filter.values.includes(car[filter.facet]))
+      }
+      // else applyRangeFilter()
+    })
 
-    } else alert('filter range')
+    // apply current sort before returning
+    if (this.state.sortColumn) {
+      results = this.doSort(results, this.state.sortColumn, this.state.sortDirection)
+    }
+
+    this.setState({
+      facetedCars: results,
+      facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
+      filters
+    })
   }
 
   // We would like you to build a website for a car dealership using HTML, CSS, and JavaScript.
@@ -108,18 +130,19 @@ class Inventory extends Component {
   // We'd also like a mechanism to filter the displayed data by make, model, color, and range of years (e.g. 2010 to 2015).
 
   render() {
-    const { displayedCars, filters, sortColumn, sortDirection } = this.state
+    const { facetedPagedCars, filters, sortColumn, sortDirection } = this.state
 
     return (
       <Container className={styles.app}>
         <Header as="h1">Car List Sample App</Header>
         <Filters itemConfig={this.itemConfig} filters={this.allFilters} onFilter={this.filter} />
+        <Header as="h3">Results: <strong>{this.state.facetedCars.length}</strong></Header>
         <InventoryList
           itemConfig={this.itemConfig}
-          items={displayedCars}
+          items={facetedPagedCars}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
-          onSort={this.sort}
+          onSort={this.onSort}
         />
       </Container>
     )
