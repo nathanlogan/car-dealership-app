@@ -6,7 +6,7 @@ import { Table, Menu, Icon } from 'semantic-ui-react'
 
 class InventoryList extends Component {
   render() {
-    const { itemConfig, items, filters, sortColumn, sortDirection, onSort } = this.props
+    const { itemConfig, items, sortColumn, sortDirection, onSort } = this.props
 
     return (
       <Table sortable celled fixed>

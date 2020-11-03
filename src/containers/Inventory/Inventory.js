@@ -65,8 +65,25 @@ class Inventory extends Component {
     return filters
   }
 
-  doSort(results, sortColumn, sortDirection = 'ascending') {
-    return sortDirection === 'ascending' ? sortBy(results, [sortColumn]) : results.reverse()
+  doSort(results, sortColumn, sortDirection) {
+    const sortCars = car => {
+      let val = car[sortColumn]
+
+      if (typeof val === "string") {
+        // coerce prices into sortable numbers
+        if (val.substr(0, 1) === '$') {
+          return parseFloat(val.replace(/[^\d]/g, ''))
+        }
+        // so you sort alphabetically, not by weird case-sensitivity sorting
+        else return val.toLowerCase()
+      }
+      else return val
+    }
+
+    results = sortBy(results, sortCars)
+    if (sortDirection === 'descending') results.reverse()
+
+    return results
   }
 
   onSort(newColumn) {
@@ -74,15 +91,17 @@ class Inventory extends Component {
     let results = cloneDeep(this.state.facetedCars)
   
     if (sortColumn === newColumn) {
-      results.reverse()
+      const newSortDirection = sortDirection === 'ascending' ? 'descending' : 'ascending'
+      results = this.doSort(results, newColumn, newSortDirection)
+
       this.setState({
         facetedCars: results,
         facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
-        sortDirection: sortDirection === 'ascending' ? 'descending' : 'ascending',
+        sortDirection: newSortDirection,
       })
     } else {
-      // TODO: sort monetary values properly
-      results = sortBy(results, [newColumn])
+      results = this.doSort(results, newColumn)
+
       this.setState({
         facetedCars: results,
         facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
