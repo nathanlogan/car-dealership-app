@@ -10,7 +10,8 @@ class Filters extends Component {
 
     return (
       <div>
-        <Header as="h3" floated={'left'}>Filters: </Header>
+        <Header as="h3">Filters: </Header>
+        
         {Object.keys(filters).map(key => {
           const filter = filters[key]
           let filterType
@@ -25,7 +26,7 @@ class Filters extends Component {
           })
 
           if (filterType === 'select') return (
-            <Dropdown
+            <p><Dropdown
               placeholder={filterName}
               multiple
               search
@@ -37,10 +38,10 @@ class Filters extends Component {
                   value: filter,
                 }))
               }
-            />
+            /></p>
           )
-          else if (filterType === 'range') return (
-            // <Dropdown
+          else if (filterType === 'range') return (<p>
+            {/* // <Dropdown
             //   placeholder={filterName}
             //   selection
             //   onChange={(e, meta) => onFilter(key, meta.value)}
@@ -61,8 +62,8 @@ class Filters extends Component {
             //       value: filter,
             //     }))
             //   }
-            // />
-            `Range: ${filter[0]} - ${filter[filter.length - 1]}`
+            // /> */}
+            Range: {filter[0]} - {filter[filter.length - 1]}</p>
           )
         })}
       </div>

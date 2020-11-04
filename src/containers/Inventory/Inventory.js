@@ -22,7 +22,8 @@ class Inventory extends Component {
       facetedPagedCars: cars.slice(0, this.numberOfCarsToShow),
       filters: [],
       sortDirection: 'ascending',
-      sortColumn: null
+      sortColumn: null,
+      currentPage: 1
     }
 
     this.itemConfig = [
@@ -39,6 +40,7 @@ class Inventory extends Component {
     this.allFilters = this.getAllFilters()
 
     this.onSort = this.onSort.bind(this)
+    this.onPageNav = this.onPageNav.bind(this)
     this.filter = this.filter.bind(this)
   }
 
@@ -98,6 +100,7 @@ class Inventory extends Component {
         facetedCars: results,
         facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
         sortDirection: newSortDirection,
+        currentPage: 1
       })
     } else {
       results = this.doSort(results, newColumn)
@@ -107,8 +110,19 @@ class Inventory extends Component {
         facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
         sortDirection: 'ascending',
         sortColumn: newColumn,
+        currentPage: 1
       })
     }
+  }
+
+  onPageNav(page) {
+    page = parseFloat(page)
+    let newSlice = this.state.facetedCars.slice(this.numberOfCarsToShow * (page - 1), this.numberOfCarsToShow * page)
+
+    this.setState({
+      facetedPagedCars: newSlice,
+      currentPage: page
+    }, () => window.scrollTo(0, 0))
   }
 
   // apply "OR" logic within filter type, but "AND" logic across filter types
@@ -137,31 +151,35 @@ class Inventory extends Component {
     this.setState({
       facetedCars: results,
       facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
-      filters
+      filters,
+      currentPage: 1
     })
   }
 
   // We would like you to build a website for a car dealership using HTML, CSS, and JavaScript.
   // build collections and models of this data
   // The vehicle listing should contain 50 vehicles per page and display all the attributes contained in the JSON file for each vehicle.
-  // We'd like the ability to sort the data on the make, model, price, odometer reading (miles), and year of the vehicles.
-  //  - TODO: sort on price
-  // We'd also like a mechanism to filter the displayed data by make, model, color, and range of years (e.g. 2010 to 2015).
+  // sort the data on the make, model, price, odometer reading (miles), and year of the vehicles
+  // filter the displayed data by make, model, color, and range of years (e.g. 2010 to 2015)
 
   render() {
-    const { facetedPagedCars, filters, sortColumn, sortDirection } = this.state
+    const { facetedCars, facetedPagedCars, sortColumn, sortDirection, currentPage } = this.state
+    const pages = Math.ceil(facetedCars.length / this.numberOfCarsToShow)
 
     return (
       <Container className={styles.app}>
         <Header as="h1">Car List Sample App</Header>
         <Filters itemConfig={this.itemConfig} filters={this.allFilters} onFilter={this.filter} />
-        <Header as="h3">Results: <strong>{this.state.facetedCars.length}</strong></Header>
+        <Header as="h3">Results: <strong>{facetedCars.length}</strong> (page {currentPage}/{pages})</Header>
         <InventoryList
           itemConfig={this.itemConfig}
           items={facetedPagedCars}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
           onSort={this.onSort}
+          onPageNav={this.onPageNav}
+          pages={pages}
+          currentPage={currentPage}
         />
       </Container>
     )

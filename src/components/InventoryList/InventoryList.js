@@ -6,7 +6,20 @@ import { Table, Menu, Icon } from 'semantic-ui-react'
 
 class InventoryList extends Component {
   render() {
-    const { itemConfig, items, sortColumn, sortDirection, onSort } = this.props
+    const { itemConfig, items, sortColumn, sortDirection, onSort, onPageNav, pages, currentPage } = this.props
+    let menuItems = []
+
+    // populate menu items
+    for (let i = 1; i <= pages; i++) {
+      menuItems.push(
+        <Menu.Item
+          active={currentPage === i}
+          onClick={(_e, data) => (currentPage !== i) && onPageNav(data.children)}
+        >
+          {i}
+        </Menu.Item>
+      )
+    }
 
     return (
       <Table sortable celled fixed>
@@ -35,24 +48,23 @@ class InventoryList extends Component {
           })}
         </Table.Body>
 
-        <Table.Footer>
+        {pages && pages > 1 ? <Table.Footer>
           <Table.Row>
             <Table.HeaderCell colSpan={itemConfig.length}>
               <Menu floated='right' pagination>
-                <Menu.Item as='a' icon>
+                <Menu.Item icon disabled={currentPage === 1} onClick={() => onPageNav(currentPage - 1)}>
                   <Icon name='chevron left' />
                 </Menu.Item>
-                <Menu.Item as='a'>1</Menu.Item>
-                <Menu.Item as='a'>2</Menu.Item>
-                <Menu.Item as='a'>3</Menu.Item>
-                <Menu.Item as='a'>4</Menu.Item>
-                <Menu.Item as='a' icon>
+
+                {menuItems}
+                
+                <Menu.Item icon disabled={currentPage === pages} onClick={() => onPageNav(currentPage + 1)}>
                   <Icon name='chevron right' />
                 </Menu.Item>
               </Menu>
             </Table.HeaderCell>
           </Table.Row>
-        </Table.Footer>
+        </Table.Footer> : null}
       </Table>
     )
   }
