@@ -1,8 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import Inventory from './containers/Inventory/Inventory';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import Inventory from "./containers/Inventory/Inventory";
+import * as serviceWorker from "./serviceWorker";
 
 const styleLink = document.createElement("link");
 styleLink.rel = "stylesheet";
@@ -13,7 +13,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Inventory />
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

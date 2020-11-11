@@ -1,3 +1,14 @@
 .capitalize {
   text-transform: capitalize;
 }
+
+.range {
+  display: inline-block;
+  width: 50%;
+  max-width: 200px;
+  margin: 0 20px 20px 10px;
+}
+
+:global(.ui.dropdown) {
+  margin: 0 10px 20px 0;
+}
