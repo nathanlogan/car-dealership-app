@@ -157,7 +157,6 @@ class Inventory extends Component {
       if (filter.type === 'select') {
         results = results.filter(car => filter.values.includes(car[filter.facet]))
       } else {
-        console.log('filtering range')
         results = results.filter(
           car => car[filter.facet] >= filter.values[0] && car[filter.facet] <= filter.values[1]
         )
