@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import styles from "./InventoryList.module.css";
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import styles from './InventoryList.module.css'
 
-import { Table, Menu, Icon } from "semantic-ui-react";
+import { Table, Menu, Icon } from 'semantic-ui-react'
 
 class InventoryList extends Component {
   render() {
@@ -15,8 +15,8 @@ class InventoryList extends Component {
       onPageNav,
       pages,
       currentPage,
-    } = this.props;
-    let menuItems = [];
+    } = this.props
+    let menuItems = []
 
     // populate menu items
     for (let i = 1; i <= pages; i++) {
@@ -27,18 +27,14 @@ class InventoryList extends Component {
         >
           {i}
         </Menu.Item>
-      );
+      )
     }
 
     const pageRow = (
       <Table.Row>
         <Table.HeaderCell colSpan={itemConfig.length}>
           <Menu floated="right" pagination>
-            <Menu.Item
-              icon
-              disabled={currentPage === 1}
-              onClick={() => onPageNav(currentPage - 1)}
-            >
+            <Menu.Item icon disabled={currentPage === 1} onClick={() => onPageNav(currentPage - 1)}>
               <Icon name="chevron left" />
             </Menu.Item>
 
@@ -54,20 +50,16 @@ class InventoryList extends Component {
           </Menu>
         </Table.HeaderCell>
       </Table.Row>
-    );
+    )
 
     return (
       <Table sortable celled fixed>
         <Table.Header>
           {pages && pages > 1 ? pageRow : null}
           <Table.Row>
-            {itemConfig.map((heading) => (
+            {itemConfig.map(heading => (
               <Table.HeaderCell
-                sorted={
-                  heading.sortable && sortColumn === heading.key
-                    ? sortDirection
-                    : null
-                }
+                sorted={heading.sortable && sortColumn === heading.key ? sortDirection : null}
                 onClick={() => heading.sortable && onSort(heading.key)}
               >
                 {heading.name ? (
@@ -81,27 +73,27 @@ class InventoryList extends Component {
         </Table.Header>
 
         <Table.Body>
-          {items.map((row) => {
+          {items.map(row => {
             return (
               <Table.Row key={row.id || row._id}>
-                {itemConfig.map((spec) => {
-                  let val = row[spec.key];
-                  val = spec.format ? spec.format(val) : val;
-                  return <Table.Cell>{val}</Table.Cell>;
+                {itemConfig.map(spec => {
+                  let val = row[spec.key]
+                  val = spec.format ? spec.format(val) : val
+                  return <Table.Cell>{val}</Table.Cell>
                 })}
               </Table.Row>
-            );
+            )
           })}
         </Table.Body>
 
         {pages && pages > 1 ? <Table.Footer>{pageRow}</Table.Footer> : null}
       </Table>
-    );
+    )
   }
 }
 
 InventoryList.propTypes = {
   // data: PropTypes.array
-};
+}
 
-export default InventoryList;
+export default InventoryList

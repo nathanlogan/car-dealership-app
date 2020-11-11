@@ -19,9 +19,8 @@
   "scripts": {
     "start": "PORT=4100 react-scripts start",
     "build": "react-scripts build",
-    "lint": "prettier --no-config --write .",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "prettify": "prettier --write ."
   },
   "eslintConfig": {
     "extends": "react-app"
