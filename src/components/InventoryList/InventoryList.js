@@ -69,6 +69,7 @@ class InventoryList extends Component {
                 key={heading.key}
                 sorted={heading.sortable && sortColumn === heading.key ? sortDirection : null}
                 onClick={() => heading.sortable && onSort(heading.key)}
+                className={!heading.sortable && styles.nonSortable}
               >
                 {heading.name ? (
                   heading.name

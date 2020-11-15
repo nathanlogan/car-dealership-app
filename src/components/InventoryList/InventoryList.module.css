@@ -1,3 +1,9 @@
 .capitalize {
   text-transform: capitalize;
 }
+
+:global(.ui.sortable.table) thead .nonSortable:hover {
+  cursor: auto;
+  /* in a real app, we would probably set this the "official" way (via some variable, or the like) */
+  background-color: #f9fafb;
+}
