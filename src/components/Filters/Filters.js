@@ -30,6 +30,7 @@ const Filters = props => {
 
           return filterType === 'select' ? (
             <Dropdown
+              key={key}
               placeholder={filterName}
               multiple
               search
@@ -41,7 +42,7 @@ const Filters = props => {
               }))}
             />
           ) : (
-            <label className={styles.range}>
+            <label className={styles.range} key={key}>
               {filterName} ({filter[0]} - {filter[filter.length - 1]}):
               <Range
                 defaultValue={[filter[0], filter[filter.length - 1]]}

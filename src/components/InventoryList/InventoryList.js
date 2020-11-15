@@ -22,6 +22,7 @@ class InventoryList extends Component {
     for (let i = 1; i <= pages; i++) {
       menuItems.push(
         <Menu.Item
+          key={i}
           active={currentPage === i}
           onClick={(_e, data) => currentPage !== i && onPageNav(data.children)}
         >
@@ -34,13 +35,14 @@ class InventoryList extends Component {
       <Table.Row>
         <Table.HeaderCell colSpan={itemConfig.length}>
           <Menu floated="right" pagination>
-            <Menu.Item icon disabled={currentPage === 1} onClick={() => onPageNav(currentPage - 1)}>
+            <Menu.Item key="L" icon disabled={currentPage === 1} onClick={() => onPageNav(currentPage - 1)}>
               <Icon name="chevron left" />
             </Menu.Item>
 
             {menuItems}
 
             <Menu.Item
+              key="R"
               icon
               disabled={currentPage === pages}
               onClick={() => onPageNav(currentPage + 1)}
@@ -59,6 +61,7 @@ class InventoryList extends Component {
           <Table.Row>
             {itemConfig.map(heading => (
               <Table.HeaderCell
+                key={heading.key}
                 sorted={heading.sortable && sortColumn === heading.key ? sortDirection : null}
                 onClick={() => heading.sortable && onSort(heading.key)}
               >
@@ -75,11 +78,11 @@ class InventoryList extends Component {
         <Table.Body>
           {items.map(row => {
             return (
-              <Table.Row key={row.id || row._id}>
+              <Table.Row key={row._id}>
                 {itemConfig.map(spec => {
                   let val = row[spec.key]
                   val = spec.format ? spec.format(val) : val
-                  return <Table.Cell>{val}</Table.Cell>
+                  return <Table.Cell key={`${row._id}_${spec.key}`}>{val}</Table.Cell>
                 })}
               </Table.Row>
             )
@@ -93,7 +96,14 @@ class InventoryList extends Component {
 }
 
 InventoryList.propTypes = {
-  // data: PropTypes.array
+  itemConfig: PropTypes.array.isRequired,
+  items: PropTypes.array.isRequired,
+  sortColumn: PropTypes.string,
+  sortDirection: PropTypes.oneOf(['ascending', 'descending']),
+  onSort: PropTypes.func,
+  onPageNav: PropTypes.func,
+  pages: PropTypes.number,
+  currentPage: PropTypes.number
 }
 
 export default InventoryList

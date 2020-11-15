@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styles from './Inventory.module.css'
 
-import cars from 'store.json'
-
 import { sortBy, cloneDeep } from 'lodash-es'
 
 import { Container, Header } from 'semantic-ui-react'
@@ -16,10 +14,9 @@ class Inventory extends Component {
 
     this.numberOfCarsToShow = 50
 
-    this.cars = cars
     this.state = {
-      facetedCars: cars.slice(0),
-      facetedPagedCars: cars.slice(0, this.numberOfCarsToShow),
+      facetedCars: props.cars,
+      facetedPagedCars: props.cars.slice(0, this.numberOfCarsToShow),
       filters: [],
       sortDirection: 'ascending',
       sortColumn: null,
@@ -69,7 +66,7 @@ class Inventory extends Component {
     })
 
     // populate filter values
-    this.cars.forEach(car => {
+    this.props.cars.forEach(car => {
       keys.forEach(key => !filters[key].includes(car[key]) && filters[key].push(car[key]))
     })
 
@@ -144,7 +141,7 @@ class Inventory extends Component {
 
   // apply "OR" logic within filter type, but "AND" logic across filter types
   filter(facet, values, type = 'select') {
-    let results = cloneDeep(this.cars)
+    let results = cloneDeep(this.props.cars)
     let filters = cloneDeep(this.state.filters)
 
     // nuke the old filter definition (if it existed)
@@ -182,7 +179,7 @@ class Inventory extends Component {
 
     return (
       <Container className={styles.app}>
-        <Header as="h1">Car List Sample App</Header>
+        <Header as="h1">Acme Car Dealership</Header>
         <Filters
           itemConfig={this.itemConfig}
           onFilter={this.filter}

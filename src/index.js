@@ -4,15 +4,15 @@ import './index.css'
 import Inventory from './containers/Inventory/Inventory'
 import * as serviceWorker from './serviceWorker'
 
+import cars from 'store.json'
+
 const styleLink = document.createElement('link')
 styleLink.rel = 'stylesheet'
 styleLink.href = '//cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css'
 document.head.appendChild(styleLink)
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Inventory />
-  </React.StrictMode>,
+  <Inventory cars={cars} />,
   document.getElementById('root')
 )
 
