@@ -118,15 +118,16 @@ class Inventory extends Component {
   // apply "OR" logic within filter type, but "AND" logic across filter types
   filter(facet, values, type = 'select') {
     let results = cloneDeep(this.props.cars)
-    let appliedFilters = cloneDeep(this.state.appliedFilters)
+    //let appliedFilters = cloneDeep(this.state.appliedFilters)
+    let newAppliedFilters = []
 
     // nuke the old filter definition (if it existed)
-    appliedFilters = appliedFilters.filter(filter => filter.facet !== facet)
+    newAppliedFilters = this.state.appliedFilters.filter(filter => filter.facet !== facet)
     // only save our filter if it has values
-    if (values.length) appliedFilters.push({ facet, values, type })
+    if (values.length) newAppliedFilters.push({ facet, values, type })
 
     // apply each filter type
-    appliedFilters.forEach(filter => {
+    newAppliedFilters.forEach(filter => {
       if (filter.type === 'select') {
         results = results.filter(car => filter.values.includes(car[filter.facet]))
       } else {
@@ -144,7 +145,7 @@ class Inventory extends Component {
     this.setState({
       facetedCars: results,
       facetedPagedCars: results.slice(0, this.props.carsPerPage),
-      appliedFilters,
+      appliedFilters: newAppliedFilters,
       currentPage: 1,
     })
   }
