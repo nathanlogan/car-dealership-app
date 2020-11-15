@@ -156,12 +156,15 @@ class Inventory extends Component {
     return (
       <Container className={styles.app}>
         <Header as="h1">Acme Car Dealership</Header>
+
+        <Header as="h2">Filters:</Header>
         <Filters
           itemConfig={this.props.itemConfig}
           onFilter={this.filter}
           filters={this.state.allFilters}
           appliedFilters={this.state.appliedFilters}
         />
+
         <Header as="h3">{facetedCars.length} results</Header>
         <InventoryList
           itemConfig={this.props.itemConfig}
