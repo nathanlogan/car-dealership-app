@@ -182,7 +182,9 @@ class Inventory extends Component {
 }
 
 Inventory.propTypes = {
-  data: PropTypes.array,
+  cars: PropTypes.array,
+  itemConfig: PropTypes.array,
+  carsPerPage: PropTypes.number
 }
 
 export default Inventory
