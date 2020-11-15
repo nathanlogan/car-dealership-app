@@ -35,7 +35,12 @@ class InventoryList extends Component {
       <Table.Row>
         <Table.HeaderCell colSpan={itemConfig.length}>
           <Menu floated="right" pagination>
-            <Menu.Item key="L" icon disabled={currentPage === 1} onClick={() => onPageNav(currentPage - 1)}>
+            <Menu.Item
+              key="L"
+              icon
+              disabled={currentPage === 1}
+              onClick={() => onPageNav(currentPage - 1)}
+            >
               <Icon name="chevron left" />
             </Menu.Item>
 
@@ -103,7 +108,7 @@ InventoryList.propTypes = {
   onSort: PropTypes.func,
   onPageNav: PropTypes.func,
   pages: PropTypes.number,
-  currentPage: PropTypes.number
+  currentPage: PropTypes.number,
 }
 
 export default InventoryList

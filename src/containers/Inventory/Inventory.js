@@ -12,41 +12,17 @@ class Inventory extends Component {
   constructor(props) {
     super(props)
 
-    this.numberOfCarsToShow = 50
-
     this.state = {
       facetedCars: props.cars,
-      facetedPagedCars: props.cars.slice(0, this.numberOfCarsToShow),
-      filters: [],
+      facetedPagedCars: props.cars.slice(0, props.carsPerPage),
+
+      allFilters: this.getAllFilters(),
+      appliedFilters: [],
+      
       sortDirection: 'ascending',
       sortColumn: null,
       currentPage: 1,
     }
-
-    this.itemConfig = [
-      { key: 'year', name: 'Years', sortable: true, filterType: 'range' },
-      { key: 'make', sortable: true, filterType: 'select' },
-      { key: 'model', sortable: true, filterType: 'select' },
-      {
-        key: 'miles',
-        sortable: true,
-        format: val => val.toLocaleString('en-us'),
-      },
-      { key: 'price', sortable: true },
-      { key: 'color', filterType: 'select' },
-      {
-        key: 'cityMileage',
-        name: 'City MPG',
-        format: obj => `${obj.low}-${obj.high}`,
-      },
-      {
-        key: 'highwayMileage',
-        name: 'Highway MPG',
-        format: obj => `${obj.low}-${obj.high}`,
-      },
-      { key: 'description' },
-    ]
-    this.allFilters = this.getAllFilters()
 
     this.onSort = this.onSort.bind(this)
     this.onPageNav = this.onPageNav.bind(this)
@@ -58,7 +34,7 @@ class Inventory extends Component {
     let filters = {}
 
     // set up filter categories
-    this.itemConfig.forEach(config => {
+    this.props.itemConfig.forEach(config => {
       if (config['filterType']) {
         filters[config.key] = []
         keys.push(config.key)
@@ -106,7 +82,7 @@ class Inventory extends Component {
 
       this.setState({
         facetedCars: results,
-        facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
+        facetedPagedCars: results.slice(0, this.props.carsPerPage),
         sortDirection: newSortDirection,
         currentPage: 1,
       })
@@ -115,7 +91,7 @@ class Inventory extends Component {
 
       this.setState({
         facetedCars: results,
-        facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
+        facetedPagedCars: results.slice(0, this.props.carsPerPage),
         sortDirection: 'ascending',
         sortColumn: newColumn,
         currentPage: 1,
@@ -126,8 +102,8 @@ class Inventory extends Component {
   onPageNav(page) {
     page = parseFloat(page)
     let newSlice = this.state.facetedCars.slice(
-      this.numberOfCarsToShow * (page - 1),
-      this.numberOfCarsToShow * page
+      this.props.carsPerPage * (page - 1),
+      this.props.carsPerPage * page
     )
 
     this.setState(
@@ -142,15 +118,15 @@ class Inventory extends Component {
   // apply "OR" logic within filter type, but "AND" logic across filter types
   filter(facet, values, type = 'select') {
     let results = cloneDeep(this.props.cars)
-    let filters = cloneDeep(this.state.filters)
+    let appliedFilters = cloneDeep(this.state.appliedFilters)
 
     // nuke the old filter definition (if it existed)
-    filters = filters.filter(filter => filter.facet !== facet)
+    appliedFilters = appliedFilters.filter(filter => filter.facet !== facet)
     // only save our filter if it has values
-    if (values.length) filters.push({ facet, values, type })
+    if (values.length) appliedFilters.push({ facet, values, type })
 
     // apply each filter type
-    filters.forEach(filter => {
+    appliedFilters.forEach(filter => {
       if (filter.type === 'select') {
         results = results.filter(car => filter.values.includes(car[filter.facet]))
       } else {
@@ -167,28 +143,28 @@ class Inventory extends Component {
 
     this.setState({
       facetedCars: results,
-      facetedPagedCars: results.slice(0, this.numberOfCarsToShow),
-      filters,
+      facetedPagedCars: results.slice(0, this.props.carsPerPage),
+      appliedFilters,
       currentPage: 1,
     })
   }
 
   render() {
     const { facetedCars, facetedPagedCars, sortColumn, sortDirection, currentPage } = this.state
-    const pages = Math.ceil(facetedCars.length / this.numberOfCarsToShow)
+    const pages = Math.ceil(facetedCars.length / this.props.carsPerPage)
 
     return (
       <Container className={styles.app}>
         <Header as="h1">Acme Car Dealership</Header>
         <Filters
-          itemConfig={this.itemConfig}
+          itemConfig={this.props.itemConfig}
           onFilter={this.filter}
-          filters={this.allFilters}
-          selectedFilters={this.state.filters}
+          filters={this.state.allFilters}
+          appliedFilters={this.state.appliedFilters}
         />
         <Header as="h3">{facetedCars.length} results</Header>
         <InventoryList
-          itemConfig={this.itemConfig}
+          itemConfig={this.props.itemConfig}
           items={facetedPagedCars}
           sortColumn={sortColumn}
           sortDirection={sortDirection}

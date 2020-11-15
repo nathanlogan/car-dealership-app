@@ -7,7 +7,7 @@ import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 
 const Filters = props => {
-  const { itemConfig, filters, selectedFilters, onFilter } = props
+  const { itemConfig, filters, appliedFilters, onFilter } = props
   const Range = Slider.createSliderWithTooltip(Slider.Range)
 
   return (
@@ -46,7 +46,7 @@ const Filters = props => {
               {filterName} ({filter[0]} - {filter[filter.length - 1]}):
               <Range
                 defaultValue={[filter[0], filter[filter.length - 1]]}
-                value={selectedFilters.filter(filter => filter.facet === key)[0]?.values}
+                value={appliedFilters.filter(filter => filter.facet === key)[0]?.values}
                 min={filter[0]}
                 max={filter[filter.length - 1]}
                 onChange={vals => onFilter(key, vals, 'range')}
@@ -62,7 +62,7 @@ const Filters = props => {
 Filters.propTypes = {
   itemConfig: PropTypes.array,
   filters: PropTypes.object,
-  selectedFilters: PropTypes.array,
+  appliedFilters: PropTypes.array,
   onFilter: PropTypes.func,
 }
 
