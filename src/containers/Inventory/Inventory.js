@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styles from './Inventory.module.css'
 
-import { sortBy, cloneDeep } from 'lodash-es'
+import { sortBy, cloneDeep } from 'lodash'
 
 import { Container, Header } from 'semantic-ui-react'
 import InventoryList from 'components/InventoryList/InventoryList'
@@ -165,7 +165,7 @@ class Inventory extends Component {
           appliedFilters={this.state.appliedFilters}
         />
 
-        <Header as="h3">{facetedCars.length} results</Header>
+        <Header as="h3" data-testid="results">{facetedCars.length} results</Header>
         <InventoryList
           itemConfig={this.props.itemConfig}
           items={facetedPagedCars}

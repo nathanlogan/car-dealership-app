@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "lodash-es": "^4.17.15",
+    "lodash": "^4.17.20",
     "rc-slider": "^9.6.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
