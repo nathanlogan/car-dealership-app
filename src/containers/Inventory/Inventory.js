@@ -118,7 +118,6 @@ class Inventory extends Component {
   // apply "OR" logic within filter type, but "AND" logic across filter types
   filter(facet, values, type = 'select') {
     let results = cloneDeep(this.props.cars)
-    //let appliedFilters = cloneDeep(this.state.appliedFilters)
     let newAppliedFilters = []
 
     // nuke the old filter definition (if it existed)
