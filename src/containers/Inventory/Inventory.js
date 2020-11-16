@@ -26,8 +26,7 @@ class Inventory extends Component {
 
     this.onSort = this.onSort.bind(this)
     this.onPageNav = this.onPageNav.bind(this)
-    this.getPagedResults = this.getPagedResults.bind(this)
-    this.filter = this.filter.bind(this)
+    this.onFilter = this.onFilter.bind(this)
   }
 
   getAllFilters() {
@@ -51,6 +50,16 @@ class Inventory extends Component {
     Object.keys(filters).forEach(key => (filters[key] = filters[key].sort()))
 
     return filters
+  }
+
+  getPagedResults() {
+    const { carsPerPage } = this.props
+    const { filteredCars, currentPage } = this.state
+
+    return filteredCars.slice(
+      carsPerPage * (currentPage - 1),
+      carsPerPage * currentPage
+    )
   }
 
   doSort(results, sortColumn, sortDirection) {
@@ -105,15 +114,8 @@ class Inventory extends Component {
     )
   }
 
-  getPagedResults() {
-    return this.state.filteredCars.slice(
-      this.props.carsPerPage * (this.state.currentPage - 1),
-      this.props.carsPerPage * this.state.currentPage
-    )
-  }
-
   // apply "OR" logic within filter type, but "AND" logic across filter types
-  filter(facet, values, type = 'select') {
+  onFilter(facet, values, type = 'select') {
     let results = cloneDeep(this.props.cars)
     let newAppliedFilters = []
 
@@ -146,7 +148,7 @@ class Inventory extends Component {
   }
 
   render() {
-    const { filteredCars, sortColumn, sortDirection, currentPage } = this.state
+    const { filteredCars, allFilters, appliedFilters, sortColumn, sortDirection, currentPage } = this.state
     const pages = Math.ceil(filteredCars.length / this.props.carsPerPage)
     const carsToShow = this.getPagedResults()
 
@@ -157,9 +159,9 @@ class Inventory extends Component {
         <Header as="h2">Filters:</Header>
         <Filters
           itemConfig={this.props.itemConfig}
-          onFilter={this.filter}
-          filters={this.state.allFilters}
-          appliedFilters={this.state.appliedFilters}
+          onFilter={this.onFilter}
+          filters={allFilters}
+          appliedFilters={appliedFilters}
         />
 
         <Header as="h3" data-testid="results">{filteredCars.length} results</Header>
