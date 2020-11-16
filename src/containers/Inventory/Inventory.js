@@ -13,19 +13,20 @@ class Inventory extends Component {
     super(props)
 
     this.state = {
-      facetedCars: props.cars,
-      facetedPagedCars: props.cars.slice(0, props.carsPerPage),
+      filteredCars: props.cars,
 
       allFilters: this.getAllFilters(),
       appliedFilters: [],
       
       sortDirection: 'ascending',
       sortColumn: null,
+
       currentPage: 1,
     }
 
     this.onSort = this.onSort.bind(this)
     this.onPageNav = this.onPageNav.bind(this)
+    this.getPagedResults = this.getPagedResults.bind(this)
     this.filter = this.filter.bind(this)
   }
 
@@ -74,15 +75,14 @@ class Inventory extends Component {
 
   onSort(newColumn) {
     const { sortColumn, sortDirection } = this.state
-    let results = cloneDeep(this.state.facetedCars)
+    let results = cloneDeep(this.state.filteredCars)
 
     if (sortColumn === newColumn) {
       const newSortDirection = sortDirection === 'ascending' ? 'descending' : 'ascending'
       results = this.doSort(results, newColumn, newSortDirection)
 
       this.setState({
-        facetedCars: results,
-        facetedPagedCars: results.slice(0, this.props.carsPerPage),
+        filteredCars: results,
         sortDirection: newSortDirection,
         currentPage: 1,
       })
@@ -90,8 +90,7 @@ class Inventory extends Component {
       results = this.doSort(results, newColumn)
 
       this.setState({
-        facetedCars: results,
-        facetedPagedCars: results.slice(0, this.props.carsPerPage),
+        filteredCars: results,
         sortDirection: 'ascending',
         sortColumn: newColumn,
         currentPage: 1,
@@ -99,19 +98,17 @@ class Inventory extends Component {
     }
   }
 
-  onPageNav(page) {
-    page = parseFloat(page)
-    let newSlice = this.state.facetedCars.slice(
-      this.props.carsPerPage * (page - 1),
-      this.props.carsPerPage * page
-    )
-
+  onPageNav(page = 1) {
     this.setState(
-      {
-        facetedPagedCars: newSlice,
-        currentPage: page,
-      },
+      { currentPage: parseInt(page, 10) || 1 },
       () => window.scrollTo(0, 0)
+    )
+  }
+
+  getPagedResults() {
+    return this.state.filteredCars.slice(
+      this.props.carsPerPage * (this.state.currentPage - 1),
+      this.props.carsPerPage * this.state.currentPage
     )
   }
 
@@ -142,16 +139,16 @@ class Inventory extends Component {
     }
 
     this.setState({
-      facetedCars: results,
-      facetedPagedCars: results.slice(0, this.props.carsPerPage),
+      filteredCars: results,
       appliedFilters: newAppliedFilters,
       currentPage: 1,
     })
   }
 
   render() {
-    const { facetedCars, facetedPagedCars, sortColumn, sortDirection, currentPage } = this.state
-    const pages = Math.ceil(facetedCars.length / this.props.carsPerPage)
+    const { filteredCars, sortColumn, sortDirection, currentPage } = this.state
+    const pages = Math.ceil(filteredCars.length / this.props.carsPerPage)
+    const carsToShow = this.getPagedResults()
 
     return (
       <Container className={styles.app}>
@@ -165,10 +162,10 @@ class Inventory extends Component {
           appliedFilters={this.state.appliedFilters}
         />
 
-        <Header as="h3" data-testid="results">{facetedCars.length} results</Header>
+        <Header as="h3" data-testid="results">{filteredCars.length} results</Header>
         <InventoryList
           itemConfig={this.props.itemConfig}
-          items={facetedPagedCars}
+          items={carsToShow}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
           onSort={this.onSort}
