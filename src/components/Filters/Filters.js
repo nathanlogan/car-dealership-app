@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './Filters.module.css'
 
-import { Header, Dropdown } from 'semantic-ui-react'
+import { Dropdown } from 'semantic-ui-react'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 
